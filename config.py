@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     google_service_account_json: str = "/app/credentials/service_account.json"
     google_drive_folder_short: str
     google_drive_folder_long: str
-    google_sheets_id: str
+    google_sheets_id_short: str
+    google_sheets_id_long: str
     db_path: str = "/app/data/jobs.db"
     port: int = 8000
     num_workers: int = 1
