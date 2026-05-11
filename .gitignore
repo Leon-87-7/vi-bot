@@ -3,6 +3,11 @@
 !package.json
 .env
 .env.*
+!.env.example
+credentials/*
+!credentials/.gitkeep
+data/*
+!data/.gitkeep
 
 # Python
 __pycache__/

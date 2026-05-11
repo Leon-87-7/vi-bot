@@ -1,0 +1,24 @@
+services:
+  vi-bot:
+    build: .
+    restart: always
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      WEBHOOK_URL: ${WEBHOOK_URL}
+      TELEGRAM_STICKER_GEMINI_FAIL: ${TELEGRAM_STICKER_GEMINI_FAIL}
+      TELEGRAM_STICKER_DRIVE_FAIL: ${TELEGRAM_STICKER_DRIVE_FAIL}
+      TRANSCRIPT_URL: ${TRANSCRIPT_URL:-http://host.docker.internal:5050}
+      BRAVE_API_KEY: ${BRAVE_API_KEY:-}
+      GOOGLE_SERVICE_ACCOUNT_JSON: /app/credentials/service_account.json
+      GOOGLE_DRIVE_FOLDER_SHORT: ${GOOGLE_DRIVE_FOLDER_SHORT}
+      GOOGLE_DRIVE_FOLDER_LONG: ${GOOGLE_DRIVE_FOLDER_LONG}
+      GOOGLE_SHEETS_ID: ${GOOGLE_SHEETS_ID}
+      DB_PATH: /app/data/jobs.db
+      NUM_WORKERS: ${NUM_WORKERS:-1}
+    volumes:
+      - ./data:/app/data
+      - ./credentials:/app/credentials:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
