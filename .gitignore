@@ -1,0 +1,24 @@
+# Credentials & secrets
+*.json
+!package.json
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# DB
+*.db
+*.sqlite
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
