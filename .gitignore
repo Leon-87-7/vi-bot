@@ -19,6 +19,9 @@ venv/
 # Docker
 docker-compose.override.yml
 
+# Worktrees
+.worktrees/
+
 # OS
 .DS_Store
 Thumbs.db
