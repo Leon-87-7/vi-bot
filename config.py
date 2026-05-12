@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     telegram_bot_token: str
     webhook_url: str
+    telegram_webhook_secret: str = ""
     telegram_sticker_gemini_fail: str
     telegram_sticker_drive_fail: str
     transcript_url: str = "http://host.docker.internal:5050"
