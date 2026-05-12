@@ -51,7 +51,7 @@ async def run_short_job(job: dict, settings: Settings, gemini_client, drive_svc,
             ]
             if related_lines:
                 report += "\n\n## Related\n" + "\n".join(related_lines)
-        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+        except (httpx.RequestError, httpx.HTTPStatusError, ValueError) as exc:
             logger.warning("Brave enrichment skipped: %s", exc)
 
     title_slug = slugify(_topic)
@@ -69,7 +69,10 @@ async def run_short_job(job: dict, settings: Settings, gemini_client, drive_svc,
 
     t_ms = int((time.monotonic() - start_time) * 1000)
     await update_job(settings.db_path, job["id"], status="done", drive_url=drive_url, processing_time_ms=t_ms)
-    await send_message(job["chat_id"], f"✅ Done! [{filename}]({drive_url})", settings)
+    try:
+        await send_message(job["chat_id"], f"✅ Done! [{filename}]({drive_url})", settings)
+    except Exception as exc:
+        logger.warning("Notification failed for job %s: %s", job["id"], exc)
 
 
 async def worker(queue: asyncio.Queue, settings: Settings, gemini_client, drive_svc, sheets_svc) -> None:
