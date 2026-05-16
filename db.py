@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS jobs (
     error_msg           TEXT,
     drive_url           TEXT,
     processing_time_ms  INTEGER,
+    platform            TEXT,
+    title               TEXT,
+    duration_s          REAL,
+    frame_count         INTEGER,
+    best_frame_index    INTEGER,
+    tools_message       TEXT,
+    links               TEXT,
+    tools_count         INTEGER,
     created_at          TEXT NOT NULL,
     updated_at          TEXT NOT NULL
 )
@@ -59,10 +67,28 @@ CREATE TABLE IF NOT EXISTS jobs (
 # ---------------------------------------------------------------------------
 
 
+_ADDED_COLUMNS: list[tuple[str, str]] = [
+    ("platform", "TEXT"),
+    ("title", "TEXT"),
+    ("duration_s", "REAL"),
+    ("frame_count", "INTEGER"),
+    ("best_frame_index", "INTEGER"),
+    ("tools_message", "TEXT"),
+    ("links", "TEXT"),
+    ("tools_count", "INTEGER"),
+]
+
+
 async def init_db(db_path: str) -> None:
-    """Create the jobs table if it does not already exist."""
+    """Create the jobs table if it does not already exist, and add any
+    columns that were introduced after a DB was first provisioned."""
     async with aiosqlite.connect(db_path) as db:
         await db.execute(_CREATE_TABLE_SQL)
+        async with db.execute("PRAGMA table_info(jobs)") as cursor:
+            existing = {row[1] for row in await cursor.fetchall()}
+        for col, coltype in _ADDED_COLUMNS:
+            if col not in existing:
+                await db.execute(f"ALTER TABLE jobs ADD COLUMN {col} {coltype}")
         await db.commit()
 
 

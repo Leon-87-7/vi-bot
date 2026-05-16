@@ -62,17 +62,19 @@ def job():
         "chat_id": 42,
         "pipeline_type": "short",
         "attempt": 0,
+        "created_at": "2026-05-12T12:00:00+00:00",
     }
 
 
 @pytest.mark.asyncio
 async def test_run_short_job_happy_path(settings, job):
     frames = [{"index": 0, "timestamp_s": 0.0, "base64": "aGVsbG8=", "mime_type": "image/jpeg"}]
-    report_text = "## Summary\nGreat video.\n\n## Key Points\n- Point 1\n\n## Timestamps\n00:00:00 — start\n\n## Tags\nfoo, bar"
+    body = {"frames": frames, "platform": "instagram_reels", "title": "Test Video", "duration_s": 10.0}
+    report_text = "## Summary\nGreat video.\n\n## Links\n- [Example](https://example.com) — a site"
 
     mock_http_response = MagicMock()
     mock_http_response.raise_for_status = MagicMock()
-    mock_http_response.json = MagicMock(return_value=frames)
+    mock_http_response.json = MagicMock(return_value=body)
 
     mock_http_client = AsyncMock()
     mock_http_client.__aenter__ = AsyncMock(return_value=mock_http_client)
@@ -85,6 +87,7 @@ async def test_run_short_job_happy_path(settings, job):
         patch("pipeline.analyse_short", new_callable=AsyncMock, return_value=report_text),
         patch("pipeline.asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
         patch("pipeline.update_job", new_callable=AsyncMock) as mock_update,
+        patch("pipeline.send_photo", new_callable=AsyncMock),
         patch("pipeline.send_message", new_callable=AsyncMock),
     ):
         mock_to_thread.side_effect = [
