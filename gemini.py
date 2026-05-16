@@ -55,7 +55,9 @@ async def analyse_short(frames: list[dict], url: str, client: genai.Client) -> s
     if not frames:
         raise ValueError("frames list is empty")
     for i, f in enumerate(frames):
-        missing = [k for k in ("mime_type", "base64", "index", "timestamp_s") if k not in f]
+        missing = [
+            k for k in ("mime_type", "base64", "index", "timestamp_s") if k not in f
+        ]
         if missing:
             raise ValueError(f"Frame {i} missing required keys: {missing}")
 
@@ -80,7 +82,7 @@ async def analyse_short(frames: list[dict], url: str, client: genai.Client) -> s
     try:
         response = await asyncio.to_thread(
             client.models.generate_content,
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash-lite",
             contents=parts,
         )
     except Exception as exc:

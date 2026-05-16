@@ -26,10 +26,25 @@ async def register_webhook(settings) -> None:
         resp.raise_for_status()
 
 
-async def send_message(chat_id: int, text: str, settings) -> None:
+async def send_message(chat_id: int, text: str, settings, parse_mode: str | None = None) -> None:
     url = _url(settings.telegram_bot_token, "sendMessage")
+    payload: dict = {"chat_id": chat_id, "text": text}
+    if parse_mode:
+        payload["parse_mode"] = parse_mode
     async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-        resp = await client.post(url, json={"chat_id": chat_id, "text": text})
+        resp = await client.post(url, json=payload)
+    resp.raise_for_status()
+
+
+async def send_photo(chat_id: int, photo_bytes: bytes, settings, caption: str | None = None, parse_mode: str | None = None) -> None:
+    url = _url(settings.telegram_bot_token, "sendPhoto")
+    data: dict = {"chat_id": str(chat_id)}
+    if caption:
+        data["caption"] = caption
+    if parse_mode:
+        data["parse_mode"] = parse_mode
+    async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+        resp = await client.post(url, data=data, files={"photo": ("photo.jpg", photo_bytes, "image/jpeg")})
     resp.raise_for_status()
 
 
